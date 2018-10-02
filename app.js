@@ -15,6 +15,11 @@ app.use(bodyParser.json())
 var appRoutes = require('./routes/app');
 var usersRoutes = require('./routes/user');
 var loginRoutes = require('./routes/login');
+var hospitalRoutes = require('./routes/hospital');
+var doctorRouter = require('./routes/doctor');
+var searchRoutes = require('./routes/search');
+var uploadRoutes = require('./routes/upload');
+var imgRoutes = require('./routes/img');
 
 //conection db
 mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) => {
@@ -22,9 +27,23 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) =
     console.log('Conect Base Mongoon :\x1b[32m%s\x1b[0m', 'online');
 });
 
+
+//server index config opcional para imagenes
+/* var serveIndex = require('serve-index');
+app.use(express.static(__dirname + '/'))
+app.use('/uploads', serveIndex(__dirname + '/upload')); */
+
+
+
+
 //routes
 app.use('/user', usersRoutes);
 app.use('/login', loginRoutes);
+app.use('/hospital', hospitalRoutes);
+app.use('/doctor', doctorRouter);
+app.use('/search', searchRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/img', imgRoutes);
 app.use('/', appRoutes);
 
 //server

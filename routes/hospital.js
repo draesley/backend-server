@@ -1,128 +1,116 @@
 var express = require('express');
-var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
 var app = express();
 
-var User = require('../models/user');
-
+var Hospital = require('../models/hospital');
 var mdCheck = require('../middleware/authentication');
 
 //rutas
 app.get('/', (req, res, next) => {
 
-
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    User.find({}, 'name email img role')
+    Hospital.find({})
         .skip(desde)
         .limit(5)
-        .exec((err, users) => {
+        .populate('user', 'name email')
+        .exec((err, hospitales) => {
             if (err) {
                 res.status(500).json({
                     ok: false,
-                    mesage: 'error loading users',
+                    mesage: 'error loading hospitales',
                     errors: err
                 });
             }
 
-            User.count({}, (err, tell) => {
-
-
+            Hospital.count({}, (err, tell) => {
                 res.status(200).json({
                     ok: true,
-                    users: users,
-                    total: tell
+                    hospitales: hospitales,
+                    conteo: tell
                 });
             });
-
         });
 });
 
-//create new user
+//create new hospital
 app.post('/', mdCheck.checkToken, (req, res) => {
     var body = req.body;
 
-    var user = new User({
+    var hospital = new Hospital({
         name: body.name,
-        email: body.email,
-        password: bcrypt.hashSync(body.password, 10),
-        img: body.img,
-        role: body.role
+        user: req.user._id
     });
 
-    user.save((err, userSave) => {
+    hospital.save((err, hospitalSave) => {
 
         if (err) {
             res.status(400).json({
                 ok: false,
-                mesage: 'error create user',
+                mesage: 'error create hospital',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            user: userSave,
-            userToken: req.user
+            hospital: hospitalSave
         });
     });
 });
 
-//update user
+//update hospital
 app.put('/:id', mdCheck.checkToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    User.findById(id, (err, user) => {
+    Hospital.findById(id, (err, hospital) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                message: 'error search user',
+                message: 'error search hospital',
                 errors: err
             });
         };
 
-        if (!user) {
+        if (!hospital) {
             return res.status(400).json({
                 ok: false,
-                message: 'error user null',
-                errors: { message: 'there is no user with that id' }
+                message: 'error hospital null',
+                errors: { message: 'there is no hospital with that id' }
             });
         };
 
-        user.name = body.name;
-        user.email = body.email;
-        user.role = body.role;
+        hospital.name = body.name;
+        hospital.user = req.user._id;
 
-        user.save((err, userSave) => {
+        hospital.save((err, hospitalSave) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    message: 'error update user',
+                    message: 'error update hospital',
                     errors: err
                 });
             };
 
-            user.password = ';)';
-
             res.status(200).json({
                 ok: true,
-                user: userSave
+                hospital: hospitalSave
             });
         });
     });
 });
 
-//delete user
+//delete hospital
 app.delete('/:id', mdCheck.checkToken, (req, res) => {
 
     var id = req.params.id;
 
-    User.findByIdAndDelete(id, (err, userDelete) => {
+    Hospital.findByIdAndDelete(id, (err, hospitalDelete) => {
 
         if (err) {
             return res.status(500).json({
@@ -132,17 +120,17 @@ app.delete('/:id', mdCheck.checkToken, (req, res) => {
             });
         };
 
-        if (!userDelete) {
+        if (!hospitalDelete) {
             return res.status(400).json({
                 ok: false,
-                message: 'error user does not exist',
-                errors: { message: 'user does not exist' }
+                message: 'error hospital does not exist',
+                errors: { message: 'hospital does not exist' }
             });
         };
 
         res.status(200).json({
             ok: true,
-            user: userDelete
+            hospital: hospitalDelete
         });
     });
 });

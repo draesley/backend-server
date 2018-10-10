@@ -15,7 +15,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    User.find({}, 'name email img role')
+    User.find({}, 'name email img role google')
         .skip(desde)
         .limit(5)
         .exec((err, users) => {
@@ -28,8 +28,6 @@ app.get('/', (req, res, next) => {
             }
 
             User.count({}, (err, tell) => {
-
-
                 res.status(200).json({
                     ok: true,
                     users: users,
@@ -41,7 +39,8 @@ app.get('/', (req, res, next) => {
 });
 
 //create new user
-app.post('/', mdCheck.checkToken, (req, res) => {
+//mdCheck.checkToken,
+app.post('/', (req, res) => {
     var body = req.body;
 
     var user = new User({
@@ -71,7 +70,7 @@ app.post('/', mdCheck.checkToken, (req, res) => {
 });
 
 //update user
-app.put('/:id', mdCheck.checkToken, (req, res) => {
+app.put('/:id', [mdCheck.checkToken, mdCheck.checkAdmin_o_Yourself], (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
@@ -118,7 +117,7 @@ app.put('/:id', mdCheck.checkToken, (req, res) => {
 });
 
 //delete user
-app.delete('/:id', mdCheck.checkToken, (req, res) => {
+app.delete('/:id', [mdCheck.checkToken, mdCheck.checkAdmin], (req, res) => {
 
     var id = req.params.id;
 

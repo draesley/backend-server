@@ -7,15 +7,44 @@ var Hospital = require('../models/hospital');
 var mdCheck = require('../middleware/authentication');
 
 //rutas
+
+app.get('/:id', (req, res) => {
+
+    var id = req.params.id;
+    Hospital.findById(id)
+        .populate('user', 'name img email')
+        .exec((err, hospital) => {
+            if (err) {
+                res.status(500).json({
+                    ok: false,
+                    mesage: 'error loading hospital',
+                    errors: err
+                });
+            }
+
+            if (!hospital) {
+                res.status(400).json({
+                    ok: false,
+                    mesage: 'error hospital not exist!!!',
+                    errors: err
+                });
+            }
+
+            res.status(200).json({
+                ok: true,
+                hospital: hospital,
+            });
+        })
+});
+
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Hospital.find({})
+    Hospital.find({}, 'name email')
         .skip(desde)
         .limit(5)
-        .populate('user', 'name email')
         .exec((err, hospitales) => {
             if (err) {
                 res.status(500).json({

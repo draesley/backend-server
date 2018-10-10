@@ -166,8 +166,8 @@ function uploadByType(type, id, nameArchive, res) {
 
                 return res.status(200).json({
                     ok: true,
-                    mesage: 'image doctor update',
-                    doctor: hospitalUpdate
+                    mesage: 'image hospital update',
+                    hospital: hospitalUpdate
                 });
             });
         });

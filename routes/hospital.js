@@ -42,7 +42,7 @@ app.get('/', (req, res, next) => {
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Hospital.find({}, 'name email')
+    Hospital.find({})
         .skip(desde)
         .limit(5)
         .exec((err, hospitales) => {

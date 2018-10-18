@@ -15,7 +15,7 @@ app.get('/', (req, res, next) => {
     Doctor.find({})
         .skip(desde)
         .limit(5)
-        .populate('user', 'name email img')
+        .populate('user', 'name email') //adicionar img si hay problemas
         .populate('hospital')
         .exec((err, doctors) => {
             if (err) {

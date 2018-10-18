@@ -38,6 +38,32 @@ app.get('/', (req, res, next) => {
         });
 });
 
+app.get('/:email', (req, res, next) => {
+
+
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    User.find({ "email": req.params.email }, 'name email')
+        .exec((err, user) => {
+            if (err) {
+                res.status(500).json({
+                    ok: false,
+                    mesage: 'error loading users',
+                    errors: err
+                });
+            }
+
+            User.count({}, (err, tell) => {
+                res.status(200).json({
+                    ok: true,
+                    user: user,
+                });
+            });
+
+        });
+});
+
 //create new user
 //mdCheck.checkToken,
 app.post('/', (req, res) => {

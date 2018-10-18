@@ -29,6 +29,7 @@ var doctorRouter = require('./routes/doctor');
 var searchRoutes = require('./routes/search');
 var uploadRoutes = require('./routes/upload');
 var imgRoutes = require('./routes/img');
+var emailRoutes = require('./routes/email');
 
 //conection db
 mongoose.connection.openUri('mongodb://localhost:27017/hospitaldb', (err, res) => {
@@ -53,6 +54,7 @@ app.use('/doctor', doctorRouter);
 app.use('/search', searchRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/img', imgRoutes);
+app.use('/email', emailRoutes);
 app.use('/', appRoutes);
 
 //server
